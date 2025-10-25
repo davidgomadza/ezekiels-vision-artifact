@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vision Artifact</title>
+<style>
+  body {
+    margin: 0;
+    background: radial-gradient(circle at center, #000022, #000000);
+    overflow: hidden;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+
+  #canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+  }
+
+  #overlay {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 35%;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+    font-size: 0.9rem;
+    border-radius: 8px;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="overlay">
+  <p><strong>Vision Narrative (Ezekiel 1:23–28)</strong></p>
+  <p>23 Under the vault their wings were stretched out one toward the other, and each had two wings covering its body.<br>
+  24 When the creatures moved, I heard the sound of their wings, like the roar of rushing waters, like the voice of the Almighty, like the tumult of an army. When they stood still, they lowered their wings.<br>
+  25 Then there came a voice from above the vault over their heads as they stood with lowered wings.<br>
+  26 Above the vault over their heads was what looked like a throne of lapis lazuli, and high above on the throne was a figure like that of a man.<br>
+  27 I saw that from what appeared to be his waist up he looked like glowing metal, as if full of fire, and that from there down he looked like fire; and brilliant light surrounded him.<br>
+  28 Like the appearance of a rainbow in the clouds on a rainy day, so was the radiance around him.</p>
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let t = 0;
+let direction = 1;
+let wheelAngle = 0;
+let innerWheelAngle = 0;
+let innerRotCount = 0;
+let clockwise = true;
+
+function drawVectorSystem() {
+  const cx = canvas.width/2 + 200*Math.cos(t/200);
+  const cy = canvas.height/2 + 200*Math.sin(t/250);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(t/300);
+
+  // Outer wheel
+  ctx.beginPath();
+  ctx.arc(0,0,100,0,Math.PI*2);
+  ctx.strokeStyle="cyan";
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // Inner wheel rotation 8 times clockwise then anticlockwise
+  ctx.save();
+  ctx.rotate(innerWheelAngle);
+  ctx.beginPath();
+  ctx.arc(0,0,50,0,Math.PI*2);
+  ctx.strokeStyle="orange";
+  ctx.lineWidth=2;
+  ctx.stroke();
+  ctx.restore();
+
+  // Four vectors (faces)
+  for(let i=0;i<4;i++){
+    ctx.save();
+    ctx.rotate((i*Math.PI/2));
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(0,-150);
+    ctx.strokeStyle="white";
+    ctx.lineWidth=3;
+    ctx.stroke();
+
+    // Wings
+    let wingFlap1 = Math.sin(t/30)*28*Math.PI/180;
+    let wingFlap2 = Math.sin(t/40)*33*Math.PI/180;
+
+    // Sideways wings
+    ctx.save();
+    ctx.rotate(wingFlap1);
+    ctx.beginPath();
+    ctx.moveTo(0,-80);
+    ctx.lineTo(60,-120);
+    ctx.strokeStyle="lightblue";
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+    ctx.rotate(-wingFlap1);
+    ctx.beginPath();
+    ctx.moveTo(0,-80);
+    ctx.lineTo(-60,-120);
+    ctx.strokeStyle="lightblue";
+    ctx.stroke();
+    ctx.restore();
+
+    // Centering wings
+    ctx.save();
+    ctx.rotate(wingFlap2);
+    ctx.beginPath();
+    ctx.moveTo(0,-60);
+    ctx.lineTo(40,-100);
+    ctx.strokeStyle="yellow";
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+    ctx.rotate(-wingFlap2);
+    ctx.beginPath();
+    ctx.moveTo(0,-60);
+    ctx.lineTo(-40,-100);
+    ctx.strokeStyle="yellow";
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawVectorSystem();
+
+  // Inner wheel rotation logic
+  if(clockwise){
+    innerWheelAngle += 0.05;
+    if(innerWheelAngle >= 2*Math.PI*8){
+      clockwise=false;
+      innerWheelAngle=0;
+    }
+  } else {
+    innerWheelAngle -= 0.05;
+    if(innerWheelAngle <= -2*Math.PI*8){
+      clockwise=true;
+      innerWheelAngle=0;
+    }
+  }
+
+  t+=2;
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html> 
